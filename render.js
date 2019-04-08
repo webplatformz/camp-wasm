@@ -10,19 +10,37 @@ export function init(videoInput) {
 
 export function render() {
   videoCapture.read(srcMat);
-  const contours = new cv.MatVector();
-  const hierarchy = new cv.Mat();
-  cv.cvtColor(srcMat, dstMat, cv.COLOR_RGB2GRAY);
-  cv.threshold(dstMat, dstMat, 127, 255, 0);
-  cv.findContours(dstMat, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
 
-  for (let i = 0; i < contours.size(); ++i) {
-    const color = new cv.Scalar(Math.round(Math.random() * 255), Math.round(Math.random() * 255), Math.round(Math.random() * 255));
-    cv.drawContours(dstMat, contours, i, color, 1, cv.LINE_8, hierarchy, 100);
-  }
+  findRectangle(srcMat, dstMat)
 
   cv.imshow('canvasOutput', dstMat);
+  window.requestAnimationFrame(render);
+}
+
+function findRectangle(input, output) {
+  const contours = new cv.MatVector();
+  const hierarchy = new cv.Mat();
+
+  cv.cvtColor(input, output, cv.COLOR_RGB2GRAY);
+  cv.threshold(output, output, 127, 255, 0);
+  cv.findContours(output, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
+
+  for (let i = 0; i < contours.size(); ++i) {
+    let color = new cv.Scalar(255, 165, 0);
+
+    let epsilon = 0.1 * cv.arcLength(contours.get(i), true);
+    let approx = new cv.Mat();
+    cv.approxPolyDP(contours.get(i), approx, epsilon, true);
+
+    if (approx.rows === 4) {
+      let boundRect = cv.boundingRect(contours.get(i));
+
+      const topLeft = new cv.Point(boundRect.x, boundRect.y)
+      const bottomRight = new cv.Point(boundRect.x + boundRect.width, boundRect.y + boundRect.height)
+      cv.rectangle(output, topLeft, bottomRight, color, 1, 16);
+    }
+  }
+
   contours.delete();
   hierarchy.delete();
-  window.requestAnimationFrame(render);
 }
