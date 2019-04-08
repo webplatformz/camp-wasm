@@ -1,12 +1,24 @@
-import { init, render } from './render.js';
+import { init, render } from './render';
 
 const videoInput = document.getElementById('videoInput');
 
-cv.onRuntimeInitialized = () => {
-  init(videoInput);
-  render();
-};
+const videoDataLoaded = new Promise(resolve =>
+  videoInput.addEventListener('loadeddata', () => {
+    videoInput.width = videoInput.clientWidth;
+    videoInput.height = videoInput.clientHeight;
+    resolve();
+  })
+);
+const openCvRuntimeLoaded = new Promise(resolve => cv.onRuntimeInitialized = resolve);
 
-navigator.mediaDevices.getUserMedia({ audio: false, video: true })
+Promise
+  .all([videoDataLoaded, openCvRuntimeLoaded])
+  .then(() => {
+    init(videoInput);
+    render();
+  });
+
+navigator.mediaDevices
+  .getUserMedia({ audio: false, video: true })
   .then(stream => videoInput.srcObject = stream)
   .catch(console.error);

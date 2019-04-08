@@ -1,0 +1,22 @@
+{
+  "name": "camp-wasm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "http-server -e js --ssl -C ./ssl/certificate.cer -K ./ssl/mykey.pem"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webplatformz/camp-wasm.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/webplatformz/camp-wasm/issues"
+  },
+  "homepage": "https://github.com/webplatformz/camp-wasm#readme",
+  "dependencies": {
+    "http-server": "0.11.1"
+  }
+}
