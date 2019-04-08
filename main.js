@@ -20,11 +20,6 @@ imgElement.onload = function () {
   window.requestAnimationFrame(() => render(cap, src, dest));
 }
 
-videoInput.addEventListener('play', () => {
-  const src = new cv.Mat(videoInput.height, videoInput.width, cv.CV_8UC4);
-  const dest = new cv.Mat(videoInput.height, videoInput.width, cv.CV_8UC4);
-  const cap = new cv.VideoCapture(videoInput);
-
-    cv.imshow('canvasOutput', mat);
-    mat.delete();
-};
+navigator.mediaDevices.getUserMedia({ audio: false, video: true })
+  .then(stream => videoInput.srcObject = stream)
+  .catch(console.error);
