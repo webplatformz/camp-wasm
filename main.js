@@ -19,6 +19,6 @@ Promise
   });
 
 navigator.mediaDevices
-  .getUserMedia({ audio: false, video: true })
+  .getUserMedia({ audio: false, video: { facingMode: ['environment', 'user'] } })
   .then(stream => videoInput.srcObject = stream)
   .catch(console.error);
