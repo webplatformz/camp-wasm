@@ -3,7 +3,6 @@ const CONSTRAINTS = {audio: false, video: {facingMode: ['environment']}};
 const worker = new Worker('filter.worker.js');
 const debugCanvas = document.querySelector('.debug-canvas');
 const inputVideo = document.querySelector('.input-video');
-let scale = 0;
 let canvas;
 let rect;
 let debugImageData;
@@ -26,16 +25,7 @@ async function startStreaming() {
     const stream = await navigator.mediaDevices.getUserMedia(CONSTRAINTS);
     const videoTrack = stream.getVideoTracks()[0];
     const settings = videoTrack.getSettings();
-    scale = PROCESSING_RESOLUTION_WIDTH / settings.width;
-
-    canvas = document.createElement('canvas');
-    canvas.setAttribute('width', settings.width * scale);
-    canvas.setAttribute('height', settings.height * scale);
-    document.querySelector('.input-container').appendChild(canvas);
-    debugCanvas.setAttribute('width', canvas.width);
-    debugCanvas.setAttribute('height', canvas.height);
-    inputVideo.setAttribute('width', canvas.width);
-    inputVideo.setAttribute('height', canvas.height);
+    setupVideoCanvas(settings);
     inputVideo.srcObject = stream;
 
     await inputVideo.play();
@@ -65,16 +55,32 @@ async function drawLoop() {
     }
 }
 
-statsFPS = new Stats();
-statsFPS.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
-statsFPS.domElement.style.right = '0px';
-statsFPS.domElement.style.left = '';
+function setupVideoCanvas(settings) {
+    const scale = PROCESSING_RESOLUTION_WIDTH / settings.width;
+    canvas = document.createElement('canvas');
+    canvas.setAttribute('width', settings.width * scale);
+    canvas.setAttribute('height', settings.height * scale);
+    document.querySelector('.input-container').appendChild(canvas);
+    debugCanvas.setAttribute('width', canvas.width);
+    debugCanvas.setAttribute('height', canvas.height);
+    inputVideo.setAttribute('width', canvas.width);
+    inputVideo.setAttribute('height', canvas.height);
+}
 
-statsMemory = new Stats();
-statsMemory.showPanel(2); // 0: fps, 1: ms, 2: mb, 3+: custom
-statsMemory.domElement.style.right = '0px';
-statsMemory.domElement.style.top = '50px';
-statsMemory.domElement.style.left = '';
+function setupStats() {
+    statsFPS = new Stats();
+    statsFPS.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+    statsFPS.domElement.style.right = '0px';
+    statsFPS.domElement.style.left = '';
 
-document.body.appendChild(statsFPS.dom);
-document.body.appendChild(statsMemory.dom);
+    statsMemory = new Stats();
+    statsMemory.showPanel(2); // 0: fps, 1: ms, 2: mb, 3+: custom
+    statsMemory.domElement.style.right = '0px';
+    statsMemory.domElement.style.top = '50px';
+    statsMemory.domElement.style.left = '';
+
+    document.body.appendChild(statsFPS.dom);
+    document.body.appendChild(statsMemory.dom);
+}
+
+setupStats();
