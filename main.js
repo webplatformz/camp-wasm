@@ -1,4 +1,4 @@
-const PROCESSING_RESOLUTION_WIDTH = 240;
+const PROCESSING_RESOLUTION_WIDTH = 480;
 const CONSTRAINTS = {audio: false, video: {facingMode: ['environment', 'user']}};
 const worker = new Worker('filter.worker.js');
 let scale = 0;
@@ -26,13 +26,17 @@ async function startStreaming() {
 async function drawLoop() {
     const frame = await imageCapture.grabFrame();
     const ctx = canvas.getContext('2d');
+
     ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    worker.postMessage(imageData, [imageData.data.buffer]);
+
     if (rect) {
+        ctx.beginPath();
         ctx.rect(rect.x, rect.y, rect.width, rect.height);
         ctx.stroke();
     }
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    worker.postMessage(imageData, [imageData.data.buffer]);
+
     requestAnimationFrame(drawLoop);
 }
 
