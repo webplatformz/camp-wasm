@@ -64,7 +64,7 @@ function findRectangle(input, output) {
         let contourArea = cv.contourArea(contours.get(i));
         let areaDiff  = boundingArea - contourArea;
 
-        if (smallestAreaDiff < areaDiff) {
+        if (smallestAreaDiff > areaDiff) {
           smallestAreaDiff = areaDiff;
           bestMatch = boundingRect;
         }
