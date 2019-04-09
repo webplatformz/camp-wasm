@@ -59,9 +59,12 @@ function findRectangle(input, output) {
     cv.findContours(output, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
 
     for (let i = 0; i < contours.size(); ++i) {
-        let boundingRect = cv.boundingRect(contours.get(i));
+        let epsilon = 0.05 * cv.arcLength(contours.get(i), true);
+        let approx = new cv.Mat();
+        cv.approxPolyDP(contours.get(i), approx, epsilon, true);
+        let boundingRect = cv.boundingRect(approx);
         let boundingArea = boundingRect.width * boundingRect.height;
-        let contourArea = cv.contourArea(contours.get(i));
+        let contourArea = cv.contourArea(approx);
         let fillRatio = boundingArea / contourArea;
 
         let minWidth = input.rows / 4;
@@ -69,6 +72,7 @@ function findRectangle(input, output) {
           biggestFillRatio = fillRatio;
           bestMatch = boundingRect;
         }
+        approx.delete();
     }
 
     if (bestMatch !== undefined) {
