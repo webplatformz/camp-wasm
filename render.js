@@ -64,7 +64,7 @@ function findRectangle(input, output) {
         let contourArea = cv.contourArea(contours.get(i));
         let fillRatio = boundingArea / contourArea;
 
-        if (biggestFillRatio < fillRatio && boundingRect.width > (input.rows / 2)) {
+        if (biggestFillRatio < fillRatio && boundingRect.width > (input.rows / 4)) {
           biggestFillRatio = fillRatio;
           bestMatch = boundingRect;
         }
