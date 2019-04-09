@@ -34,8 +34,6 @@ addEventListener('message', function handleMessage({data}) {
                 bestMatchingRectangle = contourBoundingRect;
             }
         }
-
-        contourApproximation.delete();
     }
 
     const dst = new cv.Mat();
