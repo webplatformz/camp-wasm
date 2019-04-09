@@ -68,7 +68,6 @@ function findRectangle(input, output) {
           smallestAreaDiff = areaDiff;
           bestMatch = boundingRect;
         }
-        boundingRect.delete();
     }
 
     if (bestMatch !== undefined) {
