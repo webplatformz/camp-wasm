@@ -27,7 +27,7 @@ addEventListener('message', function handleMessage({data}) {
         if ( contourBoundingRect.width > minBoundingRectWidth && contourBoundingRect.height > minBoundingRectHeight) {
             let boundingArea = contourBoundingRect.width * contourBoundingRect.height;
             let contourArea = cv.contourArea(currentContour);
-            let fillRatio = boundingArea / contourArea;
+            let fillRatio = contourArea / boundingArea;
 
             if (highestFillRatio < fillRatio) {
                 highestFillRatio = fillRatio;
