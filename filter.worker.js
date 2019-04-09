@@ -48,7 +48,7 @@ addEventListener('message', function handleMessage({data}) {
     dst.delete();
     postMessage({
         type: 'FRAME',
-        bestMatchingRectangle,
+        boundRect: bestMatchingRectangle,
         imageData,
     }, [imageData.data.buffer]);
 
