@@ -53,6 +53,7 @@ async function drawLoop() {
     if (rect) {
         ctx.beginPath();
         ctx.rect(rect.x, rect.y, rect.width, rect.height);
+        ctx.strokeStyle = '#FFA500';
         ctx.stroke();
     }
 
