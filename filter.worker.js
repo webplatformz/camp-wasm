@@ -14,15 +14,15 @@ addEventListener('message', function handleMessage({data}) {
 
     cv.medianBlur(imgMat, imgMat, 7);
 
-    cv.Canny(imgMat, imgMat, 80, 210);
+    cv.Canny(imgMat, imgMat, 80, 190);
 
     cv.findContours(imgMat, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
 
     for (let i = 0; i < contours.size(); ++i) {
         let currentContour = contours.get(i);
         let contourBoundingRect = cv.boundingRect(currentContour);
-        let minBoundingRectWidth = imgMat.cols * 0.33;
-        let minBoundingRectHeight = imgMat.rows * 0.33;
+        let minBoundingRectWidth = imgMat.cols * 0.5;
+        let minBoundingRectHeight = imgMat.rows * 0.5;
 
         if ( contourBoundingRect.width > minBoundingRectWidth && contourBoundingRect.height > minBoundingRectHeight) {
             let boundingArea = contourBoundingRect.width * contourBoundingRect.height;
