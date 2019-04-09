@@ -1,11 +1,8 @@
 importScripts('opencv/opencv.js');
-let runtimeInitialized = false;
 
-cv.onRuntimeInitialized = () => runtimeInitialized = true;
+cv.onRuntimeInitialized = () => postMessage({type: 'RUNTIME_INITIALIZED'});
 
 addEventListener('message', function handleMessage({data}) {
-    if (!runtimeInitialized) return;
-
     const imgMat = cv.matFromImageData(data);
     const contours = new cv.MatVector();
     const hierarchy = new cv.Mat();
@@ -44,10 +41,20 @@ addEventListener('message', function handleMessage({data}) {
         approx.delete();
     }
 
+    let boundRect;
     if (biggestContour) {
-        const boundRect = cv.boundingRect(biggestContour);
-        postMessage({x: boundRect.x, y: boundRect.y, width: boundRect.width, height: boundRect.height});
+        boundRect = cv.boundingRect(biggestContour);
     }
+    const dst = new cv.Mat();
+    imgMat.convertTo(dst, cv.CV_8U);
+    cv.cvtColor(dst, dst, cv.COLOR_GRAY2RGBA);
+    const imageData = new ImageData(new Uint8ClampedArray(dst.data, dst.cols, dst.rows), dst.cols);
+    dst.delete();
+    postMessage({
+        type: 'FRAME',
+        boundRect,
+        imageData,
+    }, [imageData.data.buffer]);
 
     contours.delete();
     hierarchy.delete();
