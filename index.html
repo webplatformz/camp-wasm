@@ -9,12 +9,19 @@
             position: absolute;
             left: -100vw;
         }
+        .loading-text {
+            position: absolute;
+            z-index: -1;
+            padding: 50px;
+        }
     </style>
 </head>
 <body>
 <h2>Hello OpenCV.js</h2>
 <div>
-    <div class="input-container"></div>
+    <div class="input-container">
+        <div class="loading-text">Loading …</div>
+    </div>
     <video class="input-video" autoplay playsinline></video>
     <canvas class="debug-canvas"></canvas>
 </div>
