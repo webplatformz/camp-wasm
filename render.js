@@ -53,7 +53,9 @@ function findRectangle(input, output) {
     cv.adaptiveThreshold(output, output, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 115, 4);
     cv.medianBlur(output, output, 11);
 
-    cv.Canny(output, output, 370, 160);
+    cv.copyMakeBorder(output, output, 5, 5, 5, 5, cv.BORDER_CONSTANT, new cv.Scalar(0, 0, 0));
+
+    cv.Canny(output, output, 175, 100);
 
     cv.findContours(output, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
 
