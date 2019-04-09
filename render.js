@@ -4,7 +4,6 @@ let dstMat;
 let statsFPS;
 let statsMemory;
 
-
 export function init(videoInput) {
     videoCapture = new cv.VideoCapture(videoInput);
     srcMat = new cv.Mat(videoInput.height, videoInput.width, cv.CV_8UC4);
