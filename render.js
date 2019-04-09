@@ -43,8 +43,8 @@ function findRectangle(input, output) {
     const contours = new cv.MatVector();
     const hierarchy = new cv.Mat();
 
-    let biggestFillRatio = 0;
-    let bestMatch;
+    let highestFillRatio = 0;
+    let bestMatchingRectangle;
 
     cv.cvtColor(input, output, cv.COLOR_BGR2GRAY);
 
@@ -59,27 +59,32 @@ function findRectangle(input, output) {
     cv.findContours(output, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
 
     for (let i = 0; i < contours.size(); ++i) {
-        let epsilon = 0.01 * cv.arcLength(contours.get(i), true);
-        let approx = new cv.Mat();
-        cv.approxPolyDP(contours.get(i), approx, epsilon, true);
-        let boundingRect = cv.boundingRect(approx);
-        let boundingArea = boundingRect.width * boundingRect.height;
-        let contourArea = cv.contourArea(approx);
-        let fillRatio = boundingArea / contourArea;
+        let currentContour = contours.get(i);
+        let epsilon = 0.01 * cv.arcLength(currentContour, true);
+        let contourApproximation = new cv.Mat();
+        cv.approxPolyDP(currentContour, contourApproximation, epsilon, true);
+        let contourBoundingRect = cv.boundingRect(contourApproximation);
+        let minBoundingRectWidth = input.cols * 0.66;
+        let minBoundingRectHeight = input.rows * 0.66;
 
-        let minWidth = input.cols * 0.66;
-        let minHeight = input.rows * 0.66;
-        if (biggestFillRatio < fillRatio && boundingRect.width > minWidth && boundingRect.height > minHeight) {
-          biggestFillRatio = fillRatio;
-          bestMatch = boundingRect;
+        if ( contourBoundingRect.width > minBoundingRectWidth && contourBoundingRect.height > minBoundingRectHeight) {
+            let boundingArea = contourBoundingRect.width * contourBoundingRect.height;
+            let contourArea = cv.contourArea(contourApproximation);
+            let fillRatio = boundingArea / contourArea;
+
+            if (highestFillRatio < fillRatio) {
+                highestFillRatio = fillRatio;
+                bestMatchingRectangle = contourBoundingRect;
+            }
         }
-        approx.delete();
+
+        contourApproximation.delete();
     }
 
-    if (bestMatch !== undefined) {
+    if (bestMatchingRectangle !== undefined) {
       let color = new cv.Scalar(0, 255, 0);
-      const topLeft = new cv.Point(bestMatch.x, bestMatch.y);
-      const bottomRight = new cv.Point(bestMatch.x + bestMatch.width, bestMatch.y + bestMatch.height);
+      const topLeft = new cv.Point(bestMatchingRectangle.x, bestMatchingRectangle.y);
+      const bottomRight = new cv.Point(bestMatchingRectangle.x + bestMatchingRectangle.width, bestMatchingRectangle.y + bestMatchingRectangle.height);
       cv.rectangle(input, topLeft, bottomRight, color, 1, 16);
     }
 
