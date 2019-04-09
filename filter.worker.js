@@ -21,8 +21,8 @@ addEventListener('message', function handleMessage({data}) {
     for (let i = 0; i < contours.size(); ++i) {
         let currentContour = contours.get(i);
         let contourBoundingRect = cv.boundingRect(currentContour);
-        let minBoundingRectWidth = imgMat.cols * 0.66;
-        let minBoundingRectHeight = imgMat.rows * 0.66;
+        let minBoundingRectWidth = imgMat.cols * 0.33;
+        let minBoundingRectHeight = imgMat.rows * 0.33;
 
         if ( contourBoundingRect.width > minBoundingRectWidth && contourBoundingRect.height > minBoundingRectHeight) {
             let boundingArea = contourBoundingRect.width * contourBoundingRect.height;
