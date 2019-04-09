@@ -53,7 +53,7 @@ function findRectangle(input, output) {
 
     // cv.copyMakeBorder(output, output, 5, 5, 5, 5, cv.BORDER_CONSTANT, new cv.Scalar(0, 0, 0));
 
-    cv.Canny(output, output, 220, 125);
+    cv.Canny(output, output, 200, 75);
 
     cv.findContours(output, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
 
