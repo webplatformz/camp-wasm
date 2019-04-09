@@ -1,24 +1,39 @@
-import {init, render} from './render.js';
+const PROCESSING_RESOLUTION_WIDTH = 240;
+const CONSTRAINTS = {audio: false, video: {facingMode: ['environment', 'user']}};
+const worker = new Worker('filter.worker.js');
+let scale = 0;
+let canvas;
+let imageCapture;
+let rect;
 
-const videoInput = document.getElementById('videoInput');
+worker.addEventListener('message', ({data}) => rect = data);
 
-const videoDataLoaded = new Promise(resolve =>
-    videoInput.addEventListener('loadeddata', () => {
-        videoInput.width = videoInput.clientWidth;
-        videoInput.height = videoInput.clientHeight;
-        resolve();
-    }),
-);
-const openCvRuntimeLoaded = new Promise(resolve => cv.onRuntimeInitialized = resolve);
+async function startStreaming() {
+    const stream = await navigator.mediaDevices.getUserMedia(CONSTRAINTS);
+    const videoTrack = stream.getVideoTracks()[0];
+    const settings = videoTrack.getSettings();
+    scale = PROCESSING_RESOLUTION_WIDTH / settings.width;
 
-Promise
-    .all([videoDataLoaded, openCvRuntimeLoaded])
-    .then(() => {
-        init(videoInput);
-        render();
-    });
+    canvas = document.createElement('canvas');
+    canvas.setAttribute('width', settings.width * scale);
+    canvas.setAttribute('height', settings.height * scale);
+    document.querySelector('.input-container').appendChild(canvas);
 
-navigator.mediaDevices
-    .getUserMedia({audio: false, video: {facingMode: ['environment', 'user']}})
-    .then(stream => videoInput.srcObject = stream)
-    .catch(console.error);
+    imageCapture = new ImageCapture(videoTrack);
+    drawLoop();
+}
+
+async function drawLoop() {
+    const frame = await imageCapture.grabFrame();
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
+    if (rect) {
+        ctx.rect(rect.x, rect.y, rect.width, rect.height);
+        ctx.stroke();
+    }
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    worker.postMessage(imageData, [imageData.data.buffer]);
+    requestAnimationFrame(drawLoop);
+}
+
+startStreaming();
