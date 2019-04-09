@@ -50,8 +50,6 @@ function findRectangle(input, output) {
 
     cv.medianBlur(output, output, 7);
 
-    //cv.copyMakeBorder(output, output, 5, 5, 5, 5, cv.BORDER_CONSTANT, new cv.Scalar(0, 0, 0));
-
     cv.Canny(output, output, 210, 80);
 
     cv.findContours(output, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
