@@ -1,10 +1,10 @@
-const PROCESSING_RESOLUTION_WIDTH = 240;
+const PROCESSING_RESOLUTION_WIDTH = 340;
 const CONSTRAINTS = {audio: false, video: {facingMode: ['environment']}};
 const worker = new Worker('filter.worker.js');
 const debugCanvas = document.querySelector('.debug-canvas');
+const inputVideo = document.querySelector('.input-video');
 let scale = 0;
 let canvas;
-let imageCapture;
 let rect;
 let debugImageData;
 let statsFPS;
@@ -34,8 +34,12 @@ async function startStreaming() {
     document.querySelector('.input-container').appendChild(canvas);
     debugCanvas.setAttribute('width', canvas.width);
     debugCanvas.setAttribute('height', canvas.height);
+    inputVideo.setAttribute('width', canvas.width);
+    inputVideo.setAttribute('height', canvas.height);
+    inputVideo.srcObject = stream;
 
-    imageCapture = new ImageCapture(videoTrack);
+    await inputVideo.play();
+
     drawLoop();
 }
 
@@ -43,10 +47,9 @@ async function drawLoop() {
     statsMemory.begin();
     statsFPS.begin();
 
-    const frame = await imageCapture.grabFrame();
     const ctx = canvas.getContext('2d');
 
-    ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(inputVideo, 0, 0, canvas.width, canvas.height);
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     worker.postMessage(imageData, [imageData.data.buffer]);
 
