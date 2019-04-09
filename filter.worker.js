@@ -20,16 +20,13 @@ addEventListener('message', function handleMessage({data}) {
 
     for (let i = 0; i < contours.size(); ++i) {
         let currentContour = contours.get(i);
-        let epsilon = 0.01 * cv.arcLength(currentContour, true);
-        let contourApproximation = new cv.Mat();
-        cv.approxPolyDP(currentContour, contourApproximation, epsilon, true);
-        let contourBoundingRect = cv.boundingRect(contourApproximation);
+        let contourBoundingRect = cv.boundingRect(currentContour);
         let minBoundingRectWidth = imgMat.cols * 0.66;
         let minBoundingRectHeight = imgMat.rows * 0.66;
 
         if ( contourBoundingRect.width > minBoundingRectWidth && contourBoundingRect.height > minBoundingRectHeight) {
             let boundingArea = contourBoundingRect.width * contourBoundingRect.height;
-            let contourArea = cv.contourArea(contourApproximation);
+            let contourArea = cv.contourArea(currentContour);
             let fillRatio = boundingArea / contourArea;
 
             if (highestFillRatio < fillRatio) {
