@@ -16,7 +16,7 @@ addEventListener('message', function handleMessage({data}) {
 
     cv.Canny(imgMat, imgMat, 200, 80);
 
-    cv.findContours(imgMat, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
+    cv.findContours(imgMat, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
 
     for (let i = 0; i < contours.size(); ++i) {
         let currentContour = contours.get(i);
