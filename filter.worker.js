@@ -7,49 +7,43 @@ addEventListener('message', function handleMessage({data}) {
     const contours = new cv.MatVector();
     const hierarchy = new cv.Mat();
 
-    let biggestContour;
+    let highestFillRatio = 0;
+    let bestMatchingRectangle;
 
     cv.cvtColor(imgMat, imgMat, cv.COLOR_BGR2GRAY);
 
-    // cv.bilateralFilter(imgMat, imgMat, 5, 75, 75, cv.BORDER_DEFAULT);
+    cv.medianBlur(imgMat, imgMat, 7);
 
-    cv.adaptiveThreshold(imgMat, imgMat, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 115, 4);
-    cv.medianBlur(imgMat, imgMat, 11);
+    cv.Canny(imgMat, imgMat, 80, 190);
 
-    cv.copyMakeBorder(imgMat, imgMat, 5, 5, 5, 5, cv.BORDER_CONSTANT, new cv.Scalar(0, 0, 0));
-    cv.Canny(imgMat, imgMat, 370, 160);
-
-    cv.findContours(imgMat, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
+    cv.findContours(imgMat, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
 
     for (let i = 0; i < contours.size(); ++i) {
+        let currentContour = contours.get(i);
+        let contourBoundingRect = cv.boundingRect(currentContour);
+        let minBoundingRectWidth = imgMat.cols * 0.5;
+        let minBoundingRectHeight = imgMat.rows * 0.5;
 
-        let epsilon = 0.1 * cv.arcLength(contours.get(i), true);
-        let approx = new cv.Mat();
-        cv.approxPolyDP(contours.get(i), approx, epsilon, true);
+        if ( contourBoundingRect.width > minBoundingRectWidth && contourBoundingRect.height > minBoundingRectHeight) {
+            let boundingArea = contourBoundingRect.width * contourBoundingRect.height;
+            let contourArea = cv.contourArea(currentContour);
+            let fillRatio = contourArea / boundingArea;
 
-        if (approx.rows === 4) {
-            let area = cv.contourArea(contours.get(i));
-
-            if (biggestContour === undefined) {
-                biggestContour = contours.get(i);
-            }
-            if (area > cv.contourArea(biggestContour)) {
-                biggestContour = contours.get(i);
+            if (highestFillRatio < fillRatio) {
+                highestFillRatio = fillRatio;
+                bestMatchingRectangle = contourBoundingRect;
             }
         }
-
-        approx.delete();
     }
 
-    postFrame(imgMat, biggestContour);
+    postFrame(imgMat, bestMatchingRectangle);
 
     contours.delete();
     hierarchy.delete();
     imgMat.delete();
 });
 
-function postFrame(imgMat, biggestContour) {
-    const boundRect = getBoundingRect(biggestContour);
+function postFrame(imgMat, boundRect) {
     const imageData = convertToImageData(imgMat);
     postMessage({
         type: 'FRAME',
@@ -65,12 +59,4 @@ function convertToImageData(imgMat) {
     const imageData = new ImageData(new Uint8ClampedArray(dst.data, dst.cols, dst.rows), dst.cols);
     dst.delete();
     return imageData;
-}
-
-function getBoundingRect(biggestContour) {
-    let boundRect;
-    if (biggestContour) {
-        boundRect = cv.boundingRect(biggestContour);
-    }
-    return boundRect;
 }
