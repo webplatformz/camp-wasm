@@ -22,7 +22,8 @@ function findRectangle(input, output) {
     const contours = new cv.MatVector();
     const hierarchy = new cv.Mat();
 
-    let biggestContour;
+    let smallestAreaDiff = Infinity;
+    let bestMatch;
 
     cv.cvtColor(input, output, cv.COLOR_BGR2GRAY);
 
@@ -37,29 +38,26 @@ function findRectangle(input, output) {
     cv.findContours(output, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
 
     for (let i = 0; i < contours.size(); ++i) {
+        let boundingRect = new cv.Mat();
+        cv.boundingRect(contours.get(i), boundingRect);
+        let boundingArea = cv.contourArea(boundingRect);
+        let contourArea = cv.contourArea(contours.get(i));
+        let areaDiff  = boundingArea - contourArea;
 
-        let epsilon = 0.1 * cv.arcLength(contours.get(i), true);
-        let approx = new cv.Mat();
-        cv.approxPolyDP(contours.get(i), approx, epsilon, true);
-
-        if (approx.rows === 4) {
-            let area = cv.contourArea(contours.get(i));
-
-            if (biggestContour === undefined) {
-                biggestContour = contours.get(i);
-            } else if (area > cv.contourArea(biggestContour)) {
-                biggestContour = contours.get(i);
-            }
+        if (smallestAreaDiff < areaDiff) {
+          smallestAreaDiff = areaDiff;
+          bestMatch = boundingRect;
         }
-
-        approx.delete();
+        boundingRect.delete();
     }
 
-    let color = new cv.Scalar(0, 255, 0);
-    let boundRect = cv.boundingRect(biggestContour);
-    const topLeft = new cv.Point(boundRect.x, boundRect.y);
-    const bottomRight = new cv.Point(boundRect.x + boundRect.width, boundRect.y + boundRect.height);
-    cv.rectangle(input, topLeft, bottomRight, color, 1, 16);
+    if (bestMatch !== undefined) {
+      let color = new cv.Scalar(0, 255, 0);
+      const topLeft = new cv.Point(bestMatch.x, bestMatch.y);
+      const bottomRight = new cv.Point(bestMatch.x + bestMatch.width, bestMatch.y + bestMatch.height);
+      cv.rectangle(input, topLeft, bottomRight, color, 1, 16);
+      bestMatch.delete()
+    }
 
     contours.delete();
     hierarchy.delete();
