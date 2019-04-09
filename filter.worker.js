@@ -14,7 +14,7 @@ addEventListener('message', function handleMessage({data}) {
 
     cv.medianBlur(imgMat, imgMat, 7);
 
-    cv.Canny(imgMat, imgMat, 175, 60);
+    cv.Canny(imgMat, imgMat, 80, 100);
 
     cv.findContours(imgMat, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
 
