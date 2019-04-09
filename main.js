@@ -63,8 +63,8 @@ function setupVideoCanvas(settings) {
     document.querySelector('.input-container').appendChild(canvas);
     debugCanvas.setAttribute('width', canvas.width);
     debugCanvas.setAttribute('height', canvas.height);
-    inputVideo.setAttribute('width', canvas.width);
-    inputVideo.setAttribute('height', canvas.height);
+    inputVideo.setAttribute('width', settings.width);
+    inputVideo.setAttribute('height', settings.height);
 }
 
 function setupStats() {
