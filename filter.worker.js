@@ -36,18 +36,27 @@ addEventListener('message', function handleMessage({data}) {
         }
     }
 
-    const dst = new cv.Mat();
-    imgMat.convertTo(dst, cv.CV_8U);
-    cv.cvtColor(dst, dst, cv.COLOR_GRAY2RGBA);
-    const imageData = new ImageData(new Uint8ClampedArray(dst.data, dst.cols, dst.rows), dst.cols);
-    dst.delete();
-    postMessage({
-        type: 'FRAME',
-        boundRect: bestMatchingRectangle,
-        imageData,
-    }, [imageData.data.buffer]);
+    postFrame(imgMat, bestMatchingRectangle);
 
     contours.delete();
     hierarchy.delete();
     imgMat.delete();
 });
+
+function postFrame(imgMat, boundRect) {
+    const imageData = convertToImageData(imgMat);
+    postMessage({
+        type: 'FRAME',
+        boundRect,
+        imageData,
+    }, [imageData.data.buffer]);
+}
+
+function convertToImageData(imgMat) {
+    const dst = new cv.Mat();
+    imgMat.convertTo(dst, cv.CV_8U);
+    cv.cvtColor(dst, dst, cv.COLOR_GRAY2RGBA);
+    const imageData = new ImageData(new Uint8ClampedArray(dst.data, dst.cols, dst.rows), dst.cols);
+    dst.delete();
+    return imageData;
+}
