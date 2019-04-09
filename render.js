@@ -31,7 +31,7 @@ export function render() {
 
     videoCapture.read(srcMat);
     findRectangle(srcMat, dstMat);
-    cv.imshow('canvasOutput', dstMat);
+    cv.imshow('canvasOutput', srcMat);
 
     statsMemory.end();
     statsFPS.end();
@@ -52,7 +52,7 @@ function findRectangle(input, output) {
 
     cv.copyMakeBorder(output, output, 5, 5, 5, 5, cv.BORDER_CONSTANT, new cv.Scalar(0, 0, 0));
 
-    cv.Canny(output, output, 200, 75);
+    cv.Canny(output, output, 210, 80);
 
     cv.findContours(output, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
 
