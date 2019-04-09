@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "http-server --ssl -C ./ssl/certificate.cer -K ./ssl/mykey.pem",
-    "now-build": ""
+    "now-build": "echo \"no build step needed\""
   },
   "repository": {
     "type": "git",
