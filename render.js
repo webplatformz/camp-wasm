@@ -31,7 +31,7 @@ export function render() {
 
     videoCapture.read(srcMat);
     findRectangle(srcMat, dstMat);
-    cv.imshow('canvasOutput', srcMat);
+    cv.imshow('canvasOutput', dest);
 
     statsMemory.end();
     statsFPS.end();
@@ -64,7 +64,7 @@ function findRectangle(input, output) {
         let contourArea = cv.contourArea(contours.get(i));
         let fillRatio = boundingArea / contourArea;
 
-        if (biggestFillRatio < fillRatio) {
+        if (biggestFillRatio < fillRatio && boundingRect.width > (input.rows / 2)) {
           biggestFillRatio = fillRatio;
           bestMatch = boundingRect;
         }
