@@ -1,4 +1,4 @@
-import {init, render} from './render';
+import {init, render} from './render.js';
 
 const videoInput = document.getElementById('videoInput');
 
