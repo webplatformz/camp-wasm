@@ -43,7 +43,7 @@ function findRectangle(input, output) {
     const contours = new cv.MatVector();
     const hierarchy = new cv.Mat();
 
-    let smallestAreaDiff = Infinity;
+    let biggestFillRatio = 0;
     let bestMatch;
 
     cv.cvtColor(input, output, cv.COLOR_BGR2GRAY);
@@ -62,10 +62,10 @@ function findRectangle(input, output) {
         let boundingRect = cv.boundingRect(contours.get(i));
         let boundingArea = boundingRect.width * boundingRect.height;
         let contourArea = cv.contourArea(contours.get(i));
-        let areaDiff  = boundingArea - contourArea;
+        let fillRatio = boundingArea / contourArea;
 
-        if (smallestAreaDiff > areaDiff) {
-          smallestAreaDiff = areaDiff;
+        if (biggestFillRatio < fillRatio) {
+          biggestFillRatio = fillRatio;
           bestMatch = boundingRect;
         }
     }
