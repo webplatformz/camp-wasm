@@ -31,7 +31,7 @@ export function render() {
 
     videoCapture.read(srcMat);
     findRectangle(srcMat, dstMat);
-    cv.imshow('canvasOutput', srcMat);
+    cv.imshow('canvasOutput', dstMat);
 
     statsMemory.end();
     statsFPS.end();
