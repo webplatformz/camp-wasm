@@ -59,7 +59,7 @@ function findRectangle(input, output) {
     cv.findContours(output, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
 
     for (let i = 0; i < contours.size(); ++i) {
-        let epsilon = 0.05 * cv.arcLength(contours.get(i), true);
+        let epsilon = 0.01 * cv.arcLength(contours.get(i), true);
         let approx = new cv.Mat();
         cv.approxPolyDP(contours.get(i), approx, epsilon, true);
         let boundingRect = cv.boundingRect(approx);
