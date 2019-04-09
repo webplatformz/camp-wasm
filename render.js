@@ -1,20 +1,42 @@
 let videoCapture;
 let srcMat;
 let dstMat;
+let statsFPS;
+let statsMemory;
 
 
 export function init(videoInput) {
     videoCapture = new cv.VideoCapture(videoInput);
     srcMat = new cv.Mat(videoInput.height, videoInput.width, cv.CV_8UC4);
     dstMat = new cv.Mat(videoInput.height, videoInput.width, cv.CV_8UC4);
+
+    statsFPS = new Stats();
+    statsFPS.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+    statsFPS.domElement.style.right = '0px';
+    statsFPS.domElement.style.left = '';
+
+    statsMemory = new Stats();
+    statsMemory.showPanel(2); // 0: fps, 1: ms, 2: mb, 3+: custom
+    statsMemory.domElement.style.right = '0px';
+    statsMemory.domElement.style.top = '50px';
+    statsMemory.domElement.style.left = '';
+
+    document.body.appendChild(statsFPS.dom);
+    document.body.appendChild(statsMemory.dom);
 }
 
 export function render() {
+
+    statsMemory.begin();
+    statsFPS.begin();
+
     videoCapture.read(srcMat);
-
     findRectangle(srcMat, dstMat);
-
     cv.imshow('canvasOutput', srcMat);
+
+    statsMemory.end();
+    statsFPS.end();
+
     window.requestAnimationFrame(render);
 }
 
@@ -47,7 +69,8 @@ function findRectangle(input, output) {
 
             if (biggestContour === undefined) {
                 biggestContour = contours.get(i);
-            } else if (area > cv.contourArea(biggestContour)) {
+            }
+            if (area > cv.contourArea(biggestContour)) {
                 biggestContour = contours.get(i);
             }
         }
