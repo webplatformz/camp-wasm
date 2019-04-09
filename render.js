@@ -48,12 +48,10 @@ function findRectangle(input, output) {
 
     cv.cvtColor(input, output, cv.COLOR_BGR2GRAY);
 
-    // cv.bilateralFilter(output, output, 5, 75, 75, cv.BORDER_DEFAULT);
-
-    cv.adaptiveThreshold(output, output, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 115, 4);
+    //cv.adaptiveThreshold(output, output, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 115, 4);
     cv.medianBlur(output, output, 11);
 
-    cv.copyMakeBorder(output, output, 5, 5, 5, 5, cv.BORDER_CONSTANT, new cv.Scalar(0, 0, 0));
+    // cv.copyMakeBorder(output, output, 5, 5, 5, 5, cv.BORDER_CONSTANT, new cv.Scalar(0, 0, 0));
 
     // cv.Canny(output, output, 230, 175);
 
