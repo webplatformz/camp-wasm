@@ -1,4 +1,4 @@
-const PROCESSING_RESOLUTION_WIDTH = 240;
+const PROCESSING_RESOLUTION_WIDTH = 340;
 const CONSTRAINTS = {audio: false, video: {facingMode: ['environment']}};
 const worker = new Worker('filter.worker.js');
 const debugCanvas = document.querySelector('.debug-canvas');
