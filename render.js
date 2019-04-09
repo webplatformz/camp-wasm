@@ -75,7 +75,6 @@ function findRectangle(input, output) {
       const topLeft = new cv.Point(bestMatch.x, bestMatch.y);
       const bottomRight = new cv.Point(bestMatch.x + bestMatch.width, bestMatch.y + bestMatch.height);
       cv.rectangle(input, topLeft, bottomRight, color, 1, 16);
-      bestMatch.delete()
     }
 
     contours.delete();
