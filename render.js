@@ -59,9 +59,8 @@ function findRectangle(input, output) {
     cv.findContours(output, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
 
     for (let i = 0; i < contours.size(); ++i) {
-        let boundingRect = new cv.Mat();
-        cv.boundingRect(contours.get(i), boundingRect);
-        let boundingArea = cv.contourArea(boundingRect);
+        let boundingRect = cv.boundingRect(contours.get(i));
+        let boundingArea = boundingRect.width * boundingRect.height;
         let contourArea = cv.contourArea(contours.get(i));
         let areaDiff  = boundingArea - contourArea;
 
