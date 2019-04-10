@@ -13,8 +13,6 @@ addEventListener('message', function handleMessage({data}) {
         imageData,
         points,
     }, [imageData.data.buffer]);
-
-    imgMat.delete();
 });
 
 function convertToImageData(imgMat) {
