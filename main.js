@@ -4,7 +4,7 @@ const worker = new Worker('filter.worker.js');
 const debugCanvas = document.querySelector('.debug-canvas');
 const inputVideo = document.querySelector('.input-video');
 let canvas;
-let rect;
+let points;
 let debugImageData;
 let statsFPS;
 let statsMemory;
@@ -15,7 +15,7 @@ worker.addEventListener('message', ({data}) => {
         startStreaming();
         return;
     }
-    rect = data.boundRect;
+    points = data.points;
     debugImageData = data.imageData;
     fillRatio = data.fillRatio;
     statsMemory.end();
@@ -45,11 +45,17 @@ async function drawLoop() {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     worker.postMessage(imageData, [imageData.data.buffer]);
 
-    if (rect) {
+    if (points) {
         ctx.beginPath();
-        ctx.rect(rect.x, rect.y, rect.width, rect.height);
+        ctx.save();
+        const [firstPoint, ...restPoints] = points;
+        ctx.moveTo(firstPoint.x, firstPoint.y);
+        restPoints.forEach(point => ctx.lineTo(point.x, point.y));
+        ctx.lineTo(firstPoint.x, firstPoint.y);
         ctx.strokeStyle = getFillratioColor(fillRatio);
+        ctx.lineWidth = 3;
         ctx.stroke();
+        ctx.restore();
     }
 
     if (debugImageData) {
