@@ -15,6 +15,11 @@
             z-index: -1;
             padding: 50px;
         }
+        .scaled {
+            visibility: hidden;
+            position: absolute;
+            left: -100vw;
+        }
     </style>
 </head>
 <body>
@@ -22,6 +27,8 @@
 <div>
     <div class="input-container">
         <div class="loading-text">Loading …</div>
+        <canvas class="full"></canvas>
+        <canvas class="scaled"></canvas>
     </div>
     <video class="input-video" autoplay playsinline></video>
     <canvas class="debug-canvas"></canvas>

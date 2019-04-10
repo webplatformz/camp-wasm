@@ -1,14 +1,16 @@
-const PROCESSING_RESOLUTION_WIDTH = 340;
+const PROCESSING_RESOLUTION_WIDTH = 240;
 const CONSTRAINTS = {audio: false, video: {facingMode: ['environment']}};
 const worker = new Worker('filter.worker.js');
 const debugCanvas = document.querySelector('.debug-canvas');
 const inputVideo = document.querySelector('.input-video');
-let canvas;
+const canvas = document.querySelector('canvas.scaled');
+const fullCanvas = document.querySelector('canvas.full');
 let points;
 let debugImageData;
 let statsFPS;
 let statsMemory;
 let fillRatio;
+let scale;
 
 worker.addEventListener('message', ({data}) => {
     if (data.type === 'RUNTIME_INITIALIZED') {
@@ -39,16 +41,18 @@ async function drawLoop() {
     statsMemory.begin();
     statsFPS.begin();
 
-    const ctx = canvas.getContext('2d');
-
-    ctx.drawImage(inputVideo, 0, 0, canvas.width, canvas.height);
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const scaledContext = canvas.getContext('2d');
+    scaledContext.drawImage(inputVideo, 0, 0, canvas.width, canvas.height);
+    const imageData = scaledContext.getImageData(0, 0, canvas.width, canvas.height);
     worker.postMessage(imageData, [imageData.data.buffer]);
+
+    const ctx = fullCanvas.getContext('2d');
+    ctx.drawImage(inputVideo, 0, 0, fullCanvas.width, fullCanvas.height);
 
     if (points) {
         ctx.beginPath();
         ctx.save();
-        const [firstPoint, ...restPoints] = points;
+        const [firstPoint, ...restPoints] = points.map(point => ({x: point.x / scale, y: point.y / scale}));
         ctx.moveTo(firstPoint.x, firstPoint.y);
         restPoints.forEach(point => ctx.lineTo(point.x, point.y));
         ctx.lineTo(firstPoint.x, firstPoint.y);
@@ -64,14 +68,13 @@ async function drawLoop() {
 }
 
 function getFillratioColor(fillRatio) {
-    if (fillRatio > 0.9) return "green";
+    if (fillRatio > 0.9) return 'green';
     if (fillRatio > 0.5) return 'orange';
     return 'red';
 }
 
 function setupVideoCanvas(settings) {
-    const scale = PROCESSING_RESOLUTION_WIDTH / settings.width;
-    canvas = document.createElement('canvas');
+    scale = PROCESSING_RESOLUTION_WIDTH / settings.width;
     canvas.setAttribute('width', settings.width * scale);
     canvas.setAttribute('height', settings.height * scale);
     document.querySelector('.input-container').appendChild(canvas);
@@ -79,6 +82,8 @@ function setupVideoCanvas(settings) {
     debugCanvas.setAttribute('height', canvas.height);
     inputVideo.setAttribute('width', settings.width);
     inputVideo.setAttribute('height', settings.height);
+    fullCanvas.setAttribute('width', settings.width);
+    fullCanvas.setAttribute('height', settings.height);
 }
 
 function setupStats() {
