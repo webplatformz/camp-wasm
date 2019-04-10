@@ -4,18 +4,18 @@ cv.onRuntimeInitialized = () => postMessage({type: 'RUNTIME_INITIALIZED'});
 
 addEventListener('message', function handleMessage({data}) {
     const imgMat = cv.matFromImageData(data);
-    postFrame(imgMat, calculateBoundingRectPoints(imgMat));
-    imgMat.delete();
-});
-
-function postFrame(imgMat, points) {
+    const points = calculateBoundingRectPoints(imgMat);
     const imageData = convertToImageData(imgMat);
+    imgMat.delete();
+
     postMessage({
         type: 'FRAME',
         imageData,
         points,
     }, [imageData.data.buffer]);
-}
+
+    imgMat.delete();
+});
 
 function convertToImageData(imgMat) {
     const dst = new cv.Mat();
