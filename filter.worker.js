@@ -46,8 +46,8 @@ function calculateBoundingRectPoints(imgMat) {
     for (let i = 0; i < contours.size(); ++i) {
         let currentContour = contours.get(i);
         let contourBoundingRect = cv.minAreaRect(currentContour);
-        let minBoundingRectWidth = imgMat.cols * 0.5;
-        let minBoundingRectHeight = imgMat.rows * 0.5;
+        let minBoundingRectWidth = imgMat.cols * 0.3;
+        let minBoundingRectHeight = imgMat.rows * 0.3;
 
         if (hasMinSize(contourBoundingRect, minBoundingRectWidth, minBoundingRectHeight)) {
             let boundingArea = contourBoundingRect.size.width * contourBoundingRect.size.height;
