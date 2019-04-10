@@ -24,7 +24,7 @@ addEventListener('message', function handleMessage({data}) {
         let minBoundingRectWidth = imgMat.cols * 0.5;
         let minBoundingRectHeight = imgMat.rows * 0.5;
 
-        if ( contourBoundingRect.width > minBoundingRectWidth && contourBoundingRect.height > minBoundingRectHeight) {
+        if (contourBoundingRect.width > minBoundingRectWidth && contourBoundingRect.height > minBoundingRectHeight) {
             let boundingArea = contourBoundingRect.width * contourBoundingRect.height;
             let contourArea = cv.contourArea(currentContour);
             let fillRatio = contourArea / boundingArea;
@@ -36,19 +36,20 @@ addEventListener('message', function handleMessage({data}) {
         }
     }
 
-    postFrame(imgMat, bestMatchingRectangle);
+    postFrame(imgMat, bestMatchingRectangle, highestFillRatio);
 
     contours.delete();
     hierarchy.delete();
     imgMat.delete();
 });
 
-function postFrame(imgMat, boundRect) {
+function postFrame(imgMat, boundRect, highestFillRatio) {
     const imageData = convertToImageData(imgMat);
     postMessage({
         type: 'FRAME',
         boundRect,
         imageData,
+        fillRatio: highestFillRatio,
     }, [imageData.data.buffer]);
 }
 

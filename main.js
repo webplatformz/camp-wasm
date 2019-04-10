@@ -8,6 +8,7 @@ let rect;
 let debugImageData;
 let statsFPS;
 let statsMemory;
+let fillRatio;
 
 worker.addEventListener('message', ({data}) => {
     if (data.type === 'RUNTIME_INITIALIZED') {
@@ -16,6 +17,7 @@ worker.addEventListener('message', ({data}) => {
     }
     rect = data.boundRect;
     debugImageData = data.imageData;
+    fillRatio = data.fillRatio;
     statsMemory.end();
     statsFPS.end();
     requestAnimationFrame(drawLoop);
@@ -46,13 +48,19 @@ async function drawLoop() {
     if (rect) {
         ctx.beginPath();
         ctx.rect(rect.x, rect.y, rect.width, rect.height);
-        ctx.strokeStyle = '#FFA500';
+        ctx.strokeStyle = getFillratioColor(fillRatio);
         ctx.stroke();
     }
 
     if (debugImageData) {
         debugCanvas.getContext('2d').putImageData(debugImageData, 0, 0);
     }
+}
+
+function getFillratioColor(fillRatio) {
+    if (fillRatio > 0.8) return "green";
+    if (fillRatio > 0.5) return 'orange';
+    return 'red';
 }
 
 function setupVideoCanvas(settings) {
