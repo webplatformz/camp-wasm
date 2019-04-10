@@ -4,7 +4,7 @@ cv.onRuntimeInitialized = () => postMessage({type: 'RUNTIME_INITIALIZED'});
 
 addEventListener('message', function handleMessage({data}) {
     const imgMat = cv.matFromImageData(data);
-    const points = calculateBoundingRectPoints(imgMat);
+    const [points, highestFillRatio] = calculateBoundingRectPoints(imgMat);
     const imageData = convertToImageData(imgMat);
     imgMat.delete();
 
@@ -12,6 +12,7 @@ addEventListener('message', function handleMessage({data}) {
         type: 'FRAME',
         imageData,
         points,
+        fillRatio: highestFillRatio,
     }, [imageData.data.buffer]);
 });
 
@@ -61,5 +62,5 @@ function calculateBoundingRectPoints(imgMat) {
     contours.delete();
     hierarchy.delete();
 
-    return points;
+    return [points, highestFillRatio];
 }
