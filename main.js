@@ -37,7 +37,7 @@ async function startStreaming() {
     drawLoop();
 }
 
-async function drawLoop() {
+function drawLoop() {
     statsMemory.begin();
     statsFPS.begin();
 
