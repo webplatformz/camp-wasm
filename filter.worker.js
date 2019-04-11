@@ -35,7 +35,7 @@ function findCorners(biggestContour) {
         return;
     }
     let points;
-    let epsilon = 0.1 * cv.arcLength(biggestContour, true);
+    let epsilon = 0.03 * cv.arcLength(biggestContour, true);
     let approx = new cv.Mat();
     cv.approxPolyDP(biggestContour, approx, epsilon, true);
 
