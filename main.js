@@ -78,9 +78,10 @@ window.addEventListener('resize', startStreaming);
 function setupVideoCanvas(settings) {
     let width = settings.width;
     let height = settings.height;
+    const portrait = 'portrait';
     scale = PROCESSING_RESOLUTION_WIDTH / width;
 
-    if (window.innerHeight > window.innerWidth && height < width) {
+    if (window.screen.orientation && window.screen.orientation.type.includes(portrait) && height < width) {
         [height, width] = [width, height];
     }
 
