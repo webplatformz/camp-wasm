@@ -68,8 +68,8 @@ function drawLoop() {
 }
 
 function getFillratioColor(fillRatio) {
-    if (fillRatio > 0.9) return 'green';
-    if (fillRatio > 0.5) return 'orange';
+    if (fillRatio > 0.5) return 'green';
+    if (fillRatio > 0.3) return 'orange';
     return 'red';
 }
 
