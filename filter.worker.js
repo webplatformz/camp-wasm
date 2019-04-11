@@ -35,7 +35,7 @@ function calculateBoundingRectPoints(imgMat) {
     const hierarchy = new cv.Mat();
 
     let highestFillRatio = 0;
-    let points;
+    let points = [];
 
     cv.cvtColor(imgMat, imgMat, cv.COLOR_BGR2GRAY);
     cv.medianBlur(imgMat, imgMat, 7);
@@ -55,9 +55,25 @@ function calculateBoundingRectPoints(imgMat) {
 
             if (highestFillRatio < fillRatio) {
                 highestFillRatio = fillRatio;
-                points = cv.RotatedRect.points(contourBoundingRect);
+
+                let epsilon = 0.1 * cv.arcLength(currentContour, true);
+                let approx = new cv.Mat();
+                cv.approxPolyDP(currentContour, approx, epsilon, true);
+
+                points = approx.data
+                    .filter((_, index) => index % 4 === 0)
+                    .reduce((acc, value, index) => {
+                        if (index % 2 === 0) {
+                            acc.push({x: value});
+                        } else {
+                            acc[acc.length - 1].y = value;
+                        }
+                        return acc;
+                    }, []);
+                approx.delete();
             }
         }
+
     }
 
     if (points) {
