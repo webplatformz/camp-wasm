@@ -59,8 +59,38 @@ function calculateBoundingRectPoints(imgMat) {
             }
         }
     }
+
+    if (points) {
+        maskRegionOfInterest(imgMat, points);
+    }
+
     contours.delete();
     hierarchy.delete();
 
     return [points, highestFillRatio];
+}
+
+function maskRegionOfInterest(imgMat, points) {
+    for (let i = 0; i < imgMat.rows; i++) {
+        for (let j = 0; j < imgMat.cols; j++) {
+            let p = new cv.Point(j, i);
+            if (!isInRegionOfInterest(p, points)) {
+                imgMat.ucharPtr(i, j)[0] = 0;
+            }
+        }
+    }
+}
+
+function isInRegionOfInterest(p, roi) {
+    let pro = [];
+    for (let i = 0; i < 4; ++i) {
+        pro[i] = computeProduct(p, roi[i], roi[(i + 1) % 4]);
+    }
+    return pro[0] * pro[2] < 0 && pro[1] * pro[3] < 0;
+}
+
+function computeProduct(p, a, b) {
+    k = (a.y - b.y) / (a.x - b.x);
+    j = a.y - k * a.x;
+    return k * p.x - p.y + j;
 }
