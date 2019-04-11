@@ -36,7 +36,6 @@ function calculateBoundingRectPoints(imgMat) {
 
     let highestFillRatio = 0;
     let points;
-    let rect;
 
     cv.cvtColor(imgMat, imgMat, cv.COLOR_BGR2GRAY);
     cv.medianBlur(imgMat, imgMat, 7);
@@ -57,7 +56,6 @@ function calculateBoundingRectPoints(imgMat) {
             if (highestFillRatio < fillRatio) {
                 highestFillRatio = fillRatio;
                 points = cv.RotatedRect.points(contourBoundingRect);
-                rect = contourBoundingRect;
             }
         }
     }
