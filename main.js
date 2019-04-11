@@ -112,6 +112,4 @@ function setupStats() {
     document.body.appendChild(statsMemory.dom);
 }
 
-document.getElementById('fullscreen').addEventListener('click', () => fullCanvas.requestFullscreen());
-
 setupStats();
