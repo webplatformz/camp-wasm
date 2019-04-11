@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/webplatformz/camp-wasm#readme",
   "dependencies": {
-    "http-server": "0.11.1",
-    "stats-js": "^1.0.0"
+    "stats-js": "1.0.0"
+  },
+  "devDependencies": {
+    "http-server": "0.11.1"
   }
 }
