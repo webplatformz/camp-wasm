@@ -73,17 +73,15 @@ function getFillratioColor(fillRatio) {
     return 'red';
 }
 
-window.addEventListener("resize", function() {
-    startStreaming()
-}, false);
+window.addEventListener('resize', startStreaming);
 
 function setupVideoCanvas(settings) {
     let width = settings.width;
     let height = settings.height;
     scale = PROCESSING_RESOLUTION_WIDTH / width;
 
-    if(window.innerHeight > window.innerWidth && height < width) {
-        [height, width] = [width, height]
+    if (window.innerHeight > window.innerWidth && height < width) {
+        [height, width] = [width, height];
     }
 
     canvas.setAttribute('width', width * scale);
@@ -112,5 +110,7 @@ function setupStats() {
     document.body.appendChild(statsFPS.dom);
     document.body.appendChild(statsMemory.dom);
 }
+
+document.getElementById('fullscreen').addEventListener('click', () => fullCanvas.requestFullscreen());
 
 setupStats();
