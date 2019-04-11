@@ -74,15 +74,13 @@ function getFillratioColor(fillRatio) {
 }
 
 window.addEventListener("resize", function() {
-    const context = debugCanvas.getContext('2d');
-    context.clearRect(0, 0, debugCanvas.height, debugCanvas.width);
     startStreaming()
 }, false);
 
 function setupVideoCanvas(settings) {
     let width = settings.width;
     let height = settings.height;
-    const scale = PROCESSING_RESOLUTION_WIDTH / width;
+    scale = PROCESSING_RESOLUTION_WIDTH / width;
 
     if(window.innerHeight > window.innerWidth && height < width) {
         [height, width] = [width, height]
@@ -91,8 +89,8 @@ function setupVideoCanvas(settings) {
     canvas.setAttribute('width', width * scale);
     canvas.setAttribute('height', height * scale);
     document.querySelector('.input-container').appendChild(canvas);
-    debugCanvas.setAttribute('width', width);
-    debugCanvas.setAttribute('height', height);
+    debugCanvas.setAttribute('width', canvas.width);
+    debugCanvas.setAttribute('height', canvas.height);
     inputVideo.setAttribute('width', width);
     inputVideo.setAttribute('height', height);
     fullCanvas.setAttribute('width', width);
