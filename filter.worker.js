@@ -42,7 +42,7 @@ function findCorners(biggestContour) {
     if (approx.rows === 4) {
         points = [];
         for (let i = 0; i < 4; i++) {
-            points.push({x: approx.intAt(i * 2), y: approx.intAt(i * 2 + 1)});
+            points.push(new cv.Point(approx.intAt(i * 2), approx.intAt(i * 2 + 1)));
         }
     }
 
