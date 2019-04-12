@@ -24,11 +24,6 @@ function convertToImageData(imgMat) {
     return new ImageData(new Uint8ClampedArray(imgMat.data, imgMat.cols, imgMat.rows), imgMat.cols);
 }
 
-function hasMinSize(contourBoundingRect, minBoundingRectWidth, minBoundingRectHeight) {
-    return contourBoundingRect.size.width > minBoundingRectWidth
-        && contourBoundingRect.size.height > minBoundingRectHeight;
-}
-
 function findCorners(biggestContour) {
     if (!biggestContour) {
         return;
@@ -64,20 +59,13 @@ function calculateBoundingRectPoints(imgMat) {
     cv.findContours(debugMat, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
 
     for (let i = 0; i < contours.size(); ++i) {
-        let currentContour = contours.get(i);
-        let contourBoundingRect = cv.minAreaRect(currentContour);
-        let minBoundingRectWidth = debugMat.cols * 0.3;
-        let minBoundingRectHeight = debugMat.rows * 0.3;
+        let boundingArea = imgMat.cols * imgMat.rows;
+        let contourArea = cv.contourArea(currentContour);
+        let fillRatio = contourArea / boundingArea;
 
-        if (hasMinSize(contourBoundingRect, minBoundingRectWidth, minBoundingRectHeight)) {
-            let boundingArea = debugMat.cols * debugMat.rows;
-            let contourArea = cv.contourArea(currentContour);
-            let fillRatio = contourArea / boundingArea;
-
-            if (highestFillRatio < fillRatio) {
-                highestFillRatio = fillRatio;
-                biggestContour = currentContour;
-            }
+        if (highestFillRatio < fillRatio) {
+            highestFillRatio = fillRatio;
+            biggestContour = currentContour;
         }
     }
 
