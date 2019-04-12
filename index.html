@@ -37,7 +37,7 @@
 <script src="main.js" type="module"></script>
 <script>
     if('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
+        navigator.serviceWorker.register('caching.worker.js')
             .then(function() {
                 console.log('Service Worker Registered');
             });
