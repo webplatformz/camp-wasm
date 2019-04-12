@@ -79,7 +79,10 @@ function calculateBoundingRectPoints(imgMat) {
 
     points = findCorners(biggestContour);
     if (points) {
-        transformImage(imgMat, convertPointsTo1DArray(points), convertPointsTo1DArray(cv.RotatedRect.points(cv.minAreaRect(biggestContour))));
+        const boundingRect = cv.minAreaRect(biggestContour);
+        const boundingRectPoints = cv.RotatedRect.points(boundingRect);
+        transformImage(imgMat, convertPointsTo1DArray(points), convertPointsTo1DArray(boundingRectPoints));
+        clipImage(imgMat, boundingRect);
     }
 
     contours.delete();
@@ -105,4 +108,9 @@ function transformImage(mat, sourcePoints, targetPoints) {
     let M = cv.getPerspectiveTransform(srcTri, dstTri);
     cv.warpPerspective(mat, mat, M, dsize, cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());
     M.delete(); srcTri.delete(); dstTri.delete();
+}
+
+function clipImage(imgMat, boundingRect) {
+    const M = cv.getRotationMatrix2D(boundingRect.center, boundingRect.angle, 1);
+    cv.warpAffine(imgMat, imgMat, M, imgMat.size(), cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());
 }
