@@ -17,8 +17,8 @@ addEventListener('message', function handleMessage({data}) {
 });
 
 function findMedianPixel(imgMat) {
-    let  m = (imgMat.rows * imgMat.cols) / 2;
-    let  bin = 0;
+    let m = (imgMat.rows * imgMat.cols) / 2;
+    let bin = 0;
     let med = -1.0;
 
     const histSize = [256];
@@ -34,7 +34,7 @@ function findMedianPixel(imgMat) {
     mask.delete();
 
     for(let i = 0; i < histSize && med < 0; ++i ) {
-        bin += cv.cvRound(hist.data[i]);
+        bin += Math.round(hist.data[i]);
         if ( bin > m && med < 0 )
             med = i;
     }
