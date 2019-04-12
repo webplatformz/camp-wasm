@@ -25,11 +25,6 @@ function convertToImageData(imgMat) {
     return imageData;
 }
 
-function hasMinSize(contourBoundingRect, minBoundingRectWidth, minBoundingRectHeight) {
-    return contourBoundingRect.size.width > minBoundingRectWidth
-        && contourBoundingRect.size.height > minBoundingRectHeight;
-}
-
 function findCorners(biggestContour) {
     if (!biggestContour) {
         return;
@@ -65,19 +60,13 @@ function calculateBoundingRectPoints(imgMat) {
 
     for (let i = 0; i < contours.size(); ++i) {
         let currentContour = contours.get(i);
-        let contourBoundingRect = cv.minAreaRect(currentContour);
-        let minBoundingRectWidth = imgMat.cols * 0.3;
-        let minBoundingRectHeight = imgMat.rows * 0.3;
+        let boundingArea = imgMat.cols * imgMat.rows;
+        let contourArea = cv.contourArea(currentContour);
+        let fillRatio = contourArea / boundingArea;
 
-        if (hasMinSize(contourBoundingRect, minBoundingRectWidth, minBoundingRectHeight)) {
-            let boundingArea = imgMat.cols * imgMat.rows;
-            let contourArea = cv.contourArea(currentContour);
-            let fillRatio = contourArea / boundingArea;
-
-            if (highestFillRatio < fillRatio) {
-                highestFillRatio = fillRatio;
-                biggestContour = currentContour;
-            }
+        if (highestFillRatio < fillRatio) {
+            highestFillRatio = fillRatio;
+            biggestContour = currentContour;
         }
     }
 
