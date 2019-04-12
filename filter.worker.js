@@ -16,6 +16,28 @@ addEventListener('message', function handleMessage({data}) {
     }, [imageData.data.buffer]);
 });
 
+function findMedianPixel(imgMat) {
+    let  m = (imgMat.rows * imgMat.cols) / 2;
+    let  bin = 0;
+    let med = -1.0;
+
+    let histSize = 256;
+    let range = [0, 256 ];
+    const histRange = { range };
+    let uniform = true;
+    let accumulate = false;
+    let hist = new cv.Mat();
+    cv.calcHist(imgMat, 1, 0, new cv.Mat(), hist, 1, histSize, histRange, uniform, accumulate);
+
+    for(let i = 0; i < histSize && med < 0; ++i ) {
+        bin += cv.cvRound( hist.at( i ) );
+        if ( bin > m && med < 0 )
+            med = i;
+    }
+
+    return med;
+}
+
 function convertToImageData(imgMat) {
     const dst = new cv.Mat();
     imgMat.convertTo(dst, cv.CV_8U);
@@ -54,6 +76,8 @@ function calculateBoundingRectPoints(imgMat) {
     let biggestContour;
 
     cv.cvtColor(imgMat, imgMat, cv.COLOR_BGR2GRAY);
+
+    let medianPixel = findMedianPixel(imgMat);
     cv.medianBlur(imgMat, imgMat, 7);
     cv.Canny(imgMat, imgMat, 80, 190);
     cv.findContours(imgMat, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
