@@ -23,10 +23,15 @@ function findMedianPixel(imgMat) {
 
     const histSize = [256];
     const histRange = [0, 256 ];
+    let srcVec = new cv.MatVector();
+    srcVec.push_back(imgMat);
     let hist = new cv.Mat();
     let mask = new cv.Mat();
     const accumulate = false;
-    cv.calcHist(imgMat, [0], mask, hist, histSize, histRange, accumulate);
+
+    cv.calcHist(srcVec, [0], mask, hist, histSize, histRange, accumulate);
+    srcVec.delete();
+    mask.delete();
 
     for(let i = 0; i < histSize && med < 0; ++i ) {
         bin += cv.cvRound( hist.at( i ) );
