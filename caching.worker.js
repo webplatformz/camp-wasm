@@ -17,9 +17,7 @@ self.addEventListener('fetch', event => {
         caches.open(cacheName).then(cache => {
             return cache.match(event.request).then(response => {
                 return response || fetch(event.request).then(response => {
-                    if (event.request.url.includes('opencv.js')) {
-                        cache.put(event.request.url, response.clone());
-                    }
+                    cache.put(event.request.url, response.clone());
                     return response;
                 });
             });
