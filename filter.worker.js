@@ -17,12 +17,7 @@ addEventListener('message', function handleMessage({data}) {
 });
 
 function convertToImageData(imgMat) {
-    const dst = new cv.Mat();
-    imgMat.convertTo(dst, cv.CV_8U);
-    cv.cvtColor(dst, dst, cv.COLOR_GRAY2RGBA);
-    const imageData = new ImageData(new Uint8ClampedArray(dst.data, dst.cols, dst.rows), dst.cols);
-    dst.delete();
-    return imageData;
+    return new ImageData(new Uint8ClampedArray(imgMat.data, imgMat.cols, imgMat.rows), imgMat.cols);
 }
 
 function hasMinSize(contourBoundingRect, minBoundingRectWidth, minBoundingRectHeight) {
@@ -53,24 +48,25 @@ function findCorners(biggestContour) {
 function calculateBoundingRectPoints(imgMat) {
     const contours = new cv.MatVector();
     const hierarchy = new cv.Mat();
+    const debugMat = new cv.Mat();
 
     let highestFillRatio = 0;
     let points;
     let biggestContour;
 
-    cv.cvtColor(imgMat, imgMat, cv.COLOR_BGR2GRAY);
-    cv.medianBlur(imgMat, imgMat, 7);
-    cv.Canny(imgMat, imgMat, 80, 190);
-    cv.findContours(imgMat, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
+    cv.cvtColor(imgMat, debugMat, cv.COLOR_BGR2GRAY);
+    cv.medianBlur(debugMat, debugMat, 7);
+    cv.Canny(debugMat, debugMat, 80, 190);
+    cv.findContours(debugMat, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
 
     for (let i = 0; i < contours.size(); ++i) {
         let currentContour = contours.get(i);
         let contourBoundingRect = cv.minAreaRect(currentContour);
-        let minBoundingRectWidth = imgMat.cols * 0.3;
-        let minBoundingRectHeight = imgMat.rows * 0.3;
+        let minBoundingRectWidth = debugMat.cols * 0.3;
+        let minBoundingRectHeight = debugMat.rows * 0.3;
 
         if (hasMinSize(contourBoundingRect, minBoundingRectWidth, minBoundingRectHeight)) {
-            let boundingArea = imgMat.cols * imgMat.rows;
+            let boundingArea = debugMat.cols * debugMat.rows;
             let contourArea = cv.contourArea(currentContour);
             let fillRatio = contourArea / boundingArea;
 
@@ -88,6 +84,7 @@ function calculateBoundingRectPoints(imgMat) {
 
     contours.delete();
     hierarchy.delete();
+    debugMat.delete();
 
     return [points, highestFillRatio];
 }
