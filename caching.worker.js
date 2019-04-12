@@ -19,9 +19,14 @@ self.addEventListener('activate', event => {
 });
 self.addEventListener('fetch', event => {
     event.respondWith(
-        caches.match(event.request, {ignoreSearch: true}).then(response => {
-            console.log('return cached file: ' + event.request);
-            return response || fetch(event.request);
+        caches.open(cacheName).then(cache => {
+            return cache.match(event.request).then(response => {
+                return response || fetch(event.request).then(response => {
+                    console.log("caching file: " + event.request);
+                    cache.put(event.request, response.clone());
+                    return response;
+                });
+            });
         }),
     );
 });
