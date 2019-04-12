@@ -1,9 +1,9 @@
 let cacheName = 'camp-wasm';
 let filesToCache = [
     '/',
-    'index.html',
-    'opencv/opencv.js',
-    'filter.worker.js',
+    '/index.html',
+    '/opencv/opencv.js',
+    '/filter.worker.js',
 ];
 self.addEventListener('install', function (e) {
     console.log('[ServiceWorker] Install');
