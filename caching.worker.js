@@ -1,9 +1,6 @@
-let cacheName = 'camp-wasm';
+let cacheName = 'camp-wasm-1.0';
 let filesToCache = [
-    '/',
-    '/index.html',
     '/opencv/opencv.js',
-    '/filter.worker.js',
 ];
 self.addEventListener('install', function (e) {
     e.waitUntil(
@@ -20,7 +17,9 @@ self.addEventListener('fetch', event => {
         caches.open(cacheName).then(cache => {
             return cache.match(event.request).then(response => {
                 return response || fetch(event.request).then(response => {
-                    cache.put(event.request.url, response.clone());
+                    if (event.request.url.includes('opencv.js')) {
+                        cache.put(event.request.url, response.clone());
+                    }
                     return response;
                 });
             });
