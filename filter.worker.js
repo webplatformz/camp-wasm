@@ -4,8 +4,12 @@ cv.onRuntimeInitialized = () => postMessage({type: 'RUNTIME_INITIALIZED'});
 
 addEventListener('message', function handleMessage({data}) {
     const imgMat = cv.matFromImageData(data);
-    const [points, highestFillRatio] = calculateBoundingRectPoints(imgMat);
-    const imageData = convertToImageData(imgMat);
+    const [points, highestFillRatio, image] = calculateBoundingRectPoints(imgMat);
+    let imageData;
+    if (image) {
+        imageData = convertToImageData(image);
+        image.delete();
+    }
     imgMat.delete();
 
     postMessage({
@@ -13,7 +17,7 @@ addEventListener('message', function handleMessage({data}) {
         imageData,
         points,
         fillRatio: highestFillRatio,
-    }, [imageData.data.buffer]);
+    }, imageData && [imageData.data.buffer]);
 });
 
 function convertToImageData(imgMat) {
@@ -77,19 +81,20 @@ function calculateBoundingRectPoints(imgMat) {
         }
     }
 
+    let image;
     points = findCorners(biggestContour);
     if (points) {
         const boundingRect = cv.minAreaRect(biggestContour);
         const boundingRectPoints = cv.RotatedRect.points(boundingRect);
         transformImage(imgMat, convertPointsTo1DArray(points), convertPointsTo1DArray(boundingRectPoints));
-        clipImage(imgMat, boundingRect);
+        image = clipImage(imgMat, boundingRect);
     }
 
     contours.delete();
     hierarchy.delete();
     debugMat.delete();
 
-    return [points, highestFillRatio];
+    return [points, highestFillRatio, image];
 }
 
 function convertPointsTo1DArray(points) {
@@ -97,20 +102,38 @@ function convertPointsTo1DArray(points) {
         points[0].x, points[0].y,
         points[1].x, points[1].y,
         points[2].x, points[2].y,
-        points[3].x, points[3].y
+        points[3].x, points[3].y,
     ];
 }
 
 function transformImage(mat, sourcePoints, targetPoints) {
-    let dsize = new cv.Size(mat.rows, mat.cols);
+    let dsize = new cv.Size(mat.cols, mat.rows);
     let srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, sourcePoints);
     let dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, targetPoints);
     let M = cv.getPerspectiveTransform(srcTri, dstTri);
     cv.warpPerspective(mat, mat, M, dsize, cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());
-    M.delete(); srcTri.delete(); dstTri.delete();
+    M.delete();
+    srcTri.delete();
+    dstTri.delete();
 }
 
 function clipImage(imgMat, boundingRect) {
-    const M = cv.getRotationMatrix2D(boundingRect.center, boundingRect.angle, 1);
-    cv.warpAffine(imgMat, imgMat, M, imgMat.size(), cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());
+    const scalingFactor = 2;
+    boundingRect.center = {x: boundingRect.center.x * scalingFactor, y: boundingRect.center.y * scalingFactor};
+    const translationM = cv.matFromArray(2, 3, cv.CV_64FC1, [1, 0, (scalingFactor - 1) / 2 * imgMat.cols, 0, 1, (scalingFactor - 1) / 2 * imgMat.rows]);
+    const rotationM = cv.getRotationMatrix2D(boundingRect.center, boundingRect.angle, 1);
+    const dstSize = new cv.Size(imgMat.cols * scalingFactor, imgMat.rows * scalingFactor);
+    const roi = new cv.Rect(
+        boundingRect.center.x - boundingRect.size.width / 2,
+        boundingRect.center.y - boundingRect.size.height / 2,
+        boundingRect.size.width,
+        boundingRect.size.height,
+    );
+
+    const dst = new cv.Mat(dstSize, cv.CV_8UC4);
+    cv.warpAffine(imgMat, dst, translationM, dstSize);
+    //cv.warpAffine(dst, dst, rotationM, dstSize);
+    translationM.delete();
+    rotationM.delete();
+    return dst;
 }

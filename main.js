@@ -63,6 +63,8 @@ function drawLoop() {
     }
 
     if (debugImageData) {
+        debugCanvas.setAttribute('width', debugImageData.width);
+        debugCanvas.setAttribute('height', debugImageData.height);
         debugCanvas.getContext('2d').putImageData(debugImageData, 0, 0);
     }
 }
