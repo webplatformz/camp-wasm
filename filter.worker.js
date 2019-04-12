@@ -59,6 +59,7 @@ function calculateBoundingRectPoints(imgMat) {
     cv.findContours(debugMat, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
 
     for (let i = 0; i < contours.size(); ++i) {
+        let currentContour = contours.get(i);
         let boundingArea = imgMat.cols * imgMat.rows;
         let contourArea = cv.contourArea(currentContour);
         let fillRatio = contourArea / boundingArea;
