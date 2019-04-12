@@ -33,7 +33,7 @@ function findMedianPixel(imgMat) {
     srcVec.delete();
     mask.delete();
 
-    for(let i = 0; i < histSize && med < 0; ++i ) {
+    for(let i = 0; i < histSize[0] && med < 0; ++i ) {
         bin += Math.round(hist.data[i]);
         if ( bin > m && med < 0 )
             med = i;
