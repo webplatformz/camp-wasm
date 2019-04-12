@@ -55,7 +55,7 @@ function calculateBoundingRectPoints(imgMat) {
     const contours = new cv.MatVector();
     const hierarchy = new cv.Mat();
 
-    const initialFillRatio = 0.5;
+    const initialFillRatio = 0.3;
     let highestFillRatio = initialFillRatio;
     let points;
     let biggestContour;
