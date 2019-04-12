@@ -35,16 +35,10 @@ function findCorners(biggestContour) {
     cv.approxPolyDP(biggestContour, approx, epsilon, true);
 
     if (approx.rows === 4) {
-        points = approx.data
-            .filter((_, index) => index % 4 === 0)
-            .reduce((acc, value, index) => {
-                if (index % 2 === 0) {
-                    acc.push({x: value});
-                } else {
-                    acc[acc.length - 1].y = value;
-                }
-                return acc;
-            }, []);
+        points = [];
+        for (let i = 0; i < 4; i++) {
+            points.push({x: approx.intAt(i * 2), y: approx.intAt(i * 2 + 1)});
+        }
     }
 
     approx.delete();
