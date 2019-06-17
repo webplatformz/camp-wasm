@@ -20,6 +20,8 @@ worker.addEventListener('message', ({data}) => {
     points = data.points;
     debugImageData = data.imageData;
     fillRatio = data.fillRatio;
+    statsMemory.end();
+    statsFPS.end();
     requestAnimationFrame(drawLoop);
 });
 
@@ -36,8 +38,6 @@ async function startStreaming() {
 }
 
 function drawLoop() {
-    statsMemory.end();
-    statsFPS.end();
     statsMemory.begin();
     statsFPS.begin();
 

@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "http-server --ssl -C ./ssl/certificate.cer -K ./ssl/mykey.pem",
+    "start": "http-server -i --ssl -C ./ssl/certificate.cer -K ./ssl/mykey.pem",
     "now-build": "echo \"no build step needed\""
   },
   "repository": {
