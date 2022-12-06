@@ -21,6 +21,6 @@
     "stats-js": "1.0.0"
   },
   "devDependencies": {
-    "http-server": "0.11.1"
+    "http-server": "0.11.2"
   }
 }
